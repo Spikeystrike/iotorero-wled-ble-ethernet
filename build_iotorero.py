@@ -2,6 +2,7 @@
 """Build WLED 16.0.1 with Boardsesh BLE JSON and IoTorero Ethernet. NEVER flashes hardware."""
 from __future__ import annotations
 import argparse
+import configparser
 import hashlib
 import json
 import re
@@ -66,11 +67,18 @@ def patch_override(text):
     needle="-D CONFIG_BT_NIMBLE_MAX_CONNECTIONS=1"
     if text.count(needle)!=1:
         raise RuntimeError("BLE override NimBLE anchor changed")
-    text=text.replace(needle,needle+"\n-D WLED_USE_ETHERNET\n-D WLED_ETH_DEFAULT=6\n-D DATA_PINS=5\n-D RLYPIN=2\n-D BTNPIN=0",1)
+    text=text.replace(needle,needle+"\n  -D WLED_USE_ETHERNET\n  -D WLED_ETH_DEFAULT=6\n  -D DATA_PINS=5\n  -D RLYPIN=2\n  -D BTNPIN=0",1)
     needle="-D BLE_JSON_DEFAULT_ENABLED=1"
     if text.count(needle)!=1:
         raise RuntimeError("BLE default flag missing")
-    return text.replace(needle,"-D BLE_JSON_DEFAULT_ENABLED=0",1)
+    result=text.replace(needle,"-D BLE_JSON_DEFAULT_ENABLED=0",1)
+    # Validate the generated file before PlatformIO downloads/builds anything.
+    parser=configparser.ConfigParser(interpolation=None,strict=True)
+    try:
+        parser.read_string(result)
+    except configparser.Error as err:
+        raise RuntimeError(f"Generated PlatformIO override is invalid: {err}") from err
+    return result
 
 def verify_ethernet():
     network=(WLED/"wled00"/"network.cpp").read_text()
@@ -118,9 +126,9 @@ def build(profile,pio):
 def selftest():
     validate_snapshot()
     assert "ethernetType = 6;" in patch_cfg("before\n"+ANCHOR+"\nafter")
-    sample="[ble_json]\n-D BLE_JSON_DEFAULT_ENABLED=1\n-D CONFIG_BT_NIMBLE_MAX_CONNECTIONS=1\n[env:boardsesh_ble_audio]\n"
+    sample="[ble_json]\nbuild_flags =\n  -D BLE_JSON_DEFAULT_ENABLED=1\n  -D CONFIG_BT_NIMBLE_MAX_CONNECTIONS=1\n[env:boardsesh_ble_audio]\nextends = ble_json\n"
     modified=patch_override(sample)
-    assert "-D WLED_USE_ETHERNET" in modified
+    assert "\n  -D WLED_USE_ETHERNET" in modified
     assert "-D BLE_JSON_DEFAULT_ENABLED=0" in modified
     print("Offline self-test OK. Live build and hardware remain untested.")
 
