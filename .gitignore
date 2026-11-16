@@ -1,0 +1,11 @@
+_sources/
+dist/
+.pio/
+__pycache__/
+*.bin
+*.elf
+cfg.json
+presets.json
+flash_backup.bin
+partition.bin
+.env
