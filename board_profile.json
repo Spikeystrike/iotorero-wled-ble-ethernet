@@ -1,0 +1,71 @@
+{
+  "model": "IoTorero Addressable/DMX Ethernet",
+  "original_wled_version": "0.15.0",
+  "target_wled_version": "16.0.1",
+  "current_ethernet_type": 13,
+  "target_ethernet_type": 6,
+  "saved_ethernet_pins": [
+    21,
+    19,
+    22,
+    25,
+    26,
+    27,
+    23,
+    18,
+    17
+  ],
+  "ethernet": {
+    "phy": "LAN8720",
+    "phy_address": 1,
+    "power_gpio": -1,
+    "mdc_gpio": 23,
+    "mdio_gpio": 18,
+    "clock": "ETH_CLOCK_GPIO17_OUT"
+  },
+  "led_outputs": [
+    {
+      "port": "DAT1",
+      "gpio": 5,
+      "start": 0,
+      "length": 35,
+      "wled_type": 22,
+      "color_order": 1
+    },
+    {
+      "port": "DAT2",
+      "gpio": 16,
+      "start": 35,
+      "length": 373,
+      "wled_type": 22,
+      "color_order": 1
+    },
+    {
+      "port": "DAT3",
+      "gpio": 4,
+      "start": 408,
+      "length": 71,
+      "wled_type": 22,
+      "color_order": 1
+    }
+  ],
+  "max_power_ma": 7000,
+  "target_fps": 42,
+  "relay_gpio": 2,
+  "button_gpio": 0,
+  "audio": {
+    "enabled": true,
+    "digital_mic_type": 5,
+    "pins": [
+      32,
+      15,
+      -1,
+      -1
+    ]
+  },
+  "notes": [
+    "Derived from original WLED configuration backup and controller photograph.",
+    "No private Wi-Fi, IP, MAC or device identifier is included.",
+    "Do not flash before verifying current partition layout and USB recovery."
+  ]
+}
